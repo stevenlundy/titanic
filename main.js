@@ -91,7 +91,7 @@ var xAxisScale = d3.scale.linear()
 var xAxis = d3.svg.axis()
   .scale(xAxisScale);
 
-var xAxisGroup = svg.append("g")
+var xAxisGroup = svg.append('g')
   .attr('class', 'axis')
   .attr('transform', 'translate('+(settings.margin.left+settings.chart.padding.left)+','+(settings.margin.top+settings.chart.h)+')')
   .call(xAxis);
@@ -135,34 +135,41 @@ svg.append('text')
   .text('Titanic Fatalities');
 
 // Draw Legend
-var legend = svg.append("g")
-  .attr("class", "legend")
-  .attr("x", settings.chart.w - 15)
-  .attr("y", settings.margin.top + settings.chart.h - 150)
-  .attr("height", 100)
-  .attr("width", 100);
+var legend = svg.append('g')
+  .attr('class', 'legend')
+  .attr('x', settings.chart.w - 15)
+  .attr('y', settings.margin.top + settings.chart.h - 150)
+  .attr('height', 100)
+  .attr('width', 100);
 
 legend.selectAll('g').data(['Male Survivor', 'Male Fatality', 'Female Survivor', 'Female Fatality'])
   .enter()
   .append('g')
   .each(function(d, i) {
     var g = d3.select(this);
-    g.append("rect")
-      .attr("x", settings.chart.w - 15)
-      .attr("y", settings.margin.top + settings.chart.h - 150 + i*25)
-      .attr("width", 10)
-      .attr("height", 10)
-      .style("fill", color(i));
-    
-    g.append("text")
-      .attr("x", settings.chart.w - 0)
-      .attr("y", settings.margin.top + settings.chart.h - 150 + i * 25 + 8)
-      .attr("height",30)
-      .attr("width",100)
-      .style("fill", color(i))
+    g.append('rect')
+      .attr('x', settings.chart.w - 15)
+      .attr('y', settings.margin.top + settings.chart.h - 150 + i*25)
+      .attr('width', 10)
+      .attr('height', 10)
+      .style('fill', color(i));
+
+    g.append('text')
+      .attr('x', settings.chart.w - 0)
+      .attr('y', settings.margin.top + settings.chart.h - 150 + i * 25 + 8)
+      .attr('height',30)
+      .attr('width',100)
+      .style('fill', color(i))
       .text(d);
 
   });
+
+var labels = {
+  survivedM: 'Male Survivors',
+  deceasedM: 'Male Fatalities',
+  survivedF: 'Female Survivors',
+  deceasedF: 'Female Fatalities'
+}
 
 // Draw pie charts
 var pieCharts = svg.append('svg:g')
@@ -190,6 +197,21 @@ nest.forEach(function(ageRange, i){
       })
       .attr('d', function(d) {
         return arc(d);
+      })
+      .on('mouseover', function (d) {
+        d3.select('#tooltip')
+          .style('left', d3.event.pageX + 'px')
+          .style('top', d3.event.pageY + 'px')
+          .style('opacity', 1)
+          .select('#value')
+          .text(d.value);
+        d3.select('#title')
+          .text(labels[d.data.label]);
+      })
+      .on('mouseout', function () {
+        // Hide the tooltip
+        d3.select('#tooltip')
+          .style('opacity', 0);
       });
   });
 })
